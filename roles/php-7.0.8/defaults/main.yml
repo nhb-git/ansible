@@ -1,0 +1,6 @@
+---
+# defaults file for php
+PHP_DIRNAME: php-7.0.8
+PHP_BASE: /usr/local/lenovosrv
+PHP_HOME: "{{ PHP_BASE }}/{{ PHP_DIRNAME }}"
+TEMP_REMOTE_DIR: /tmp/install_php

@@ -1,0 +1,5 @@
+---
+# defaults file for php_redis
+temp_redis_dir: /tmp/php_redis
+redis_name: redis-3.0.0.tgz
+php_conf: "{{ php_home }}/etc/php.ini"

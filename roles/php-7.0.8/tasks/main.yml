@@ -1,0 +1,105 @@
+---
+# tasks file for php
+- name: install basic package
+  yum: name={{ item }} state=present
+  with_items:
+    - gcc-c++
+    - gcc
+    - cmake
+    - cyrus-sasl-devel
+    - libmemcached
+    - bison
+    - curl
+    - libxml2-devel
+    - libxslt-devel
+    - autoconf
+    - libcur*
+    - libxml2
+    - libxml2-devel
+    - zlib
+    - zlib-devel
+    - openssl
+    - openssl-devel
+    - bzip2
+    - bzip2-devel
+    - curl
+    - curl-devel
+    - libjpeg
+    - libjpeg-devel
+    - libpng
+    - libpng-devel
+    - freetype-devel
+    - gmp-devel
+    - mysql-devel
+    - ncurses
+    - ncurses-devel
+    - unixODBC-devel
+    - net-snmp
+    - net-snmp-devel
+    - libsqlite3*
+    - sqlite*
+
+- name: create temp dir
+  file: path={{ TEMP_REMOTE_DIR }} state=directory
+
+- name: copy and unzip php's depend on package to target server
+  unarchive: src={{ item }} dest={{ TEMP_REMOTE_DIR }}
+  with_items:
+    - cphalcon.tar.gz
+    - libiconv-1.14.tar.gz
+    - libmcrypt-2.5.8.tar.gz
+    - libmemcached-1.0.18.tar.gz
+    - mcrypt-2.6.8.tar.gz
+    - mhash-0.9.9.9.tar.gz
+    - "{{ PHP_DIRNAME }}.tar.gz"
+    - php-memcached-php7.tar.gz
+    - pthreads-3.1.6.tgz
+    - redis-3.0.0.tgz
+    - xdebug.tar.gz
+
+- name: install php's depend on package
+  shell: >
+         cd {{ TEMP_REMOTE_DIR }}/{{ item }} && ./configure && make && make install && ldconfig
+  with_items:
+    - libiconv-1.14
+    - libmcrypt-2.5.8
+    - libmemcached-1.0.18
+    - mcrypt-2.6.8
+    - mhash-0.9.9.9
+
+- name: install php
+  shell: > 
+         cd {{ TEMP_REMOTE_DIR }}/{{ PHP_DIRNAME }} && ./configure --prefix={{ PHP_HOME }}   --with-config-file-path={{ PHP_HOME }}/etc 
+         --with-iconv-dir   --with-jpeg-dir   --with-png-dir   --with-zlib   --with-libxml-dir   --enable-xml   --disable-rpath   
+         --enable-bcmath   --enable-shmop   --enable-sysvsem   --enable-inline-optimization   --with-curl   --enable-mbregex   
+         --enable-mbstring   --with-mcrypt   --with-gd   --with-freetype-dir   --enable-gd-native-ttf   --with-openssl   --with-mhash   
+         --enable-pcntl   --enable-sockets   --with-xmlrpc   --enable-zip   --enable-soap   --enable-session   --with-gettext   
+         --with-mysqli=mysqlnd   --with-pdo-mysql=mysqlnd   --enable-fpm   --with-bz2 --enable-ftp --disable-fileinfo   --enable-opcache  
+         --enable-maintainer-zts && make ZEND_EXTRA_LIBS='-liconv' && make install
+
+- name: install memcached extend
+  shell: > 
+           cd {{ TEMP_REMOTE_DIR }}/php-memcached-php7 && {{ PHP_HOME }}/bin/phpize && ./configure 
+           --with-php-config={{ PHP_HOME }}/bin/php-config --disable-memcached-sasl --enable-memcached --enable-memcached-json &&
+           make && make install
+  notify: add memcache_module
+
+- name: install redis and xdebug extend
+  shell: > 
+           cd {{ TEMP_REMOTE_DIR }}/{{ item }} && {{ PHP_HOME }}/bin/phpize && ./configure
+           --with-php-config={{ PHP_HOME }}/bin/php-config && make && make install
+  with_items:
+    - redis-3.0.0
+    - xdebug
+
+- name: install imagick extend
+  shell: "{{ PHP_HOME }}/bin/pecl install imagick"
+
+- name: install cphalcon extend
+  shell: > 
+         cd {{ TEMP_REMOTE_DIR }}/cphalcon/build && ./install --phpize {{ PHP_HOME }}/bin/phpize --php-config {{ PHP_HOME }}/bin/php-config
+
+- name: install pthreads extend
+  shell: > 
+         cd {{ TEMP_REMOTE_DIR }}/pthreads-3.1.6 && {{ PHP_HOME }}/bin/phpize && ./configure
+         --enable-pthreads --with-php-config={{ PHP_HOME }}/bin/php-config && make && make install

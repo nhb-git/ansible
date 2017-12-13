@@ -1,0 +1,6 @@
+---
+# handlers file for php_cphalcon
+- name: add_cphalcon
+  lineinfile:
+    path: "{{ php_conf }}"
+    line: extension=phalcon.so

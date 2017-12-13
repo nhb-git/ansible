@@ -1,0 +1,41 @@
+---
+# tasks file for linux_os_baseline
+- name: ignore subnet broadcast message and shutdown ip package redirect
+  blockinfile:
+    path: /etc/sysctl.conf
+    block: |
+      net.ipv4.icmp_echo_ignore_broadcasts = 1
+      net.ipv4.conf.all.accept_redirects = 0
+    backup: yes
+  notify: reload sysctl
+
+- name: add account login fail lock function and password double check
+  blockinfile: 
+    path: /etc/pam.d/system-auth
+    block: |
+        auth    required    pam_tally2.so    deny=5    onerr=fail    unlock_time=300
+        password    $CONTROL    pam_unix.so    sha512    shadow    remember=5    use_authtok
+    backup: yes
+
+#- name: add shell login warning message
+#  blockinfile:
+#    path: /etc/motd
+#    block: |
+#        ----------------------------------Warning---------------------------------
+#                                  Authorised access only
+#
+#                       This system is the property of WWW.LENOVO.COM
+#
+#                  Disconnect IMMEDIATELY if you are not an authorized user
+#
+#                     Your IP has been IDS records Don't damage any files!
+#        --------------------------------------------------------------------------
+#    marker: ""
+#    backup: yes 
+
+- name: set password max available time
+  lineinfile:
+    path: /etc/login.defs
+    regexp: "^PASS_MAX_DAYS*.*"
+    line: PASS_MAX_DAYS   90
+    backup: yes

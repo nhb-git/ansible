@@ -1,0 +1,15 @@
+---
+# tasks file for php_xdebug
+- name: create temp directory in remote server
+  file: path={{ temp_xdebug_dir }} state=directory
+
+- name: copy and unzip php's xdebug module to temp directory in remote server 
+  unarchive: src={{ xdebug_name }} dest={{ temp_xdebug_dir }}
+
+- name: install xdebug module 
+  shell: >
+         cd {{ temp_xdebug_dir }}/*/ && {{ php_home }}/bin/phpize && ./configure
+         --with-php-config={{ php_home }}/bin/php-config && make && make install
+
+- name: clean xdebug install package
+  file: path={{ temp_xdebug_dir }} state=absent

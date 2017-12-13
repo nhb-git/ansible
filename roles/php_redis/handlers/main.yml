@@ -1,0 +1,6 @@
+---
+# handlers file for php_redis
+- name: add_redis
+  lineinfile:
+    path: "{{ php_conf }}"
+    line: extension=redis.so

@@ -1,0 +1,4 @@
+---
+# handlers file for linux_os_baseline
+- name: reload sysctl
+  shell: /usr/sbin/sysctl -p

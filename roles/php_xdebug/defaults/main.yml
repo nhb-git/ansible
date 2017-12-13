@@ -1,0 +1,4 @@
+---
+# defaults file for php_xdebug
+temp_xdebug_dir: /tmp/php_xdebug
+xdebug_name: xdebug.tar.gz
