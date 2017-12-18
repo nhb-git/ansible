@@ -1,0 +1,79 @@
+---
+# tasks file for php
+- name: install basic package
+  yum: name={{ item }} state=present
+  with_items:
+    - gcc-c++
+    - gcc
+    - cmake
+    - cyrus-sasl-devel
+    - libmemcached
+    - bison
+    - curl
+    - libxml2-devel
+    - libxslt-devel
+    - autoconf
+    - libcur*
+    - libxml2
+    - libxml2-devel
+    - zlib
+    - zlib-devel
+    - openssl
+    - openssl-devel
+    - bzip2
+    - bzip2-devel
+    - curl
+    - curl-devel
+    - libjpeg
+    - libjpeg-devel
+    - libpng
+    - libpng-devel
+    - freetype-devel
+    - gmp-devel
+    - mysql-devel
+    - ncurses
+    - ncurses-devel
+    - unixODBC-devel
+    - net-snmp
+    - net-snmp-devel
+    - libsqlite3*
+    - sqlite*
+
+- name: create temp dir
+  file: path="{{ temp_php_dir }}/php" state=directory
+
+- name: copy and unzip php's depend on package to target server
+  unarchive: src={{ item }} dest={{ temp_php_dir }}
+  with_items:
+    - "{{ libiconv_name }}"
+    - "{{ libmcrypt_name }}"
+    - "{{ libmemcached_name }}"
+    - "{{ mcrypt_name }}"
+    - "{{ mhash_name }}"
+
+- name: copy and unzip php package to target server
+  unarchive: src={{ php_package }} dest="{{ temp_php_dir }}/php"
+
+- name: install php's depend on package
+  shell: >
+         cd {{ temp_php_dir }}/{{ item }} && ./configure && make && make install && ldconfig
+  with_items:
+    - "*libiconv*"
+    - "*libmcrypt*"
+    - "*libmemcached*"
+    - "*mcrypt*"
+    - "*mhash*"
+
+- name: install php
+  shell: > 
+         cd {{ temp_php_dir }}/php/* && ./configure --prefix={{ php_home }}   --with-config-file-path={{ php_home }}/etc 
+         --with-iconv-dir   --with-jpeg-dir   --with-png-dir   --with-zlib   --with-libxml-dir   --enable-xml   --disable-rpath   
+         --enable-bcmath   --enable-shmop   --enable-sysvsem   --enable-inline-optimization   --with-curl   --enable-mbregex   
+         --enable-mbstring   --with-mcrypt   --with-gd   --with-freetype-dir   --enable-gd-native-ttf   --with-openssl   --with-mhash   
+         --enable-pcntl   --enable-sockets   --with-xmlrpc   --enable-zip   --enable-soap   --enable-session   --with-gettext   
+         --with-mysqli=mysqlnd   --with-pdo-mysql=mysqlnd   --enable-fpm   --with-bz2 --enable-ftp --disable-fileinfo   --enable-opcache  
+         --enable-maintainer-zts && make ZEND_EXTRA_LIBS='-liconv' && make install
+
+- name: clean temp dir
+  file: path={{ temp_php_dir }} state=absent
+  
