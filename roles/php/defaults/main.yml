@@ -1,0 +1,11 @@
+---
+# defaults file for php
+# php_dirname is php package was unziped directory name
+temp_php_dir: /tmp/install_php
+config_path: "{{ php_home }}/etc"
+
+libiconv_name: libiconv-1.14.tar.gz
+libmcrypt_name: libmcrypt-2.5.8.tar.gz
+libmemcached_name: libmemcached-1.0.18.tar.gz
+mcrypt_name: mcrypt-2.6.8.tar.gz
+mhash_name: mhash-0.9.9.9.tar.gz
