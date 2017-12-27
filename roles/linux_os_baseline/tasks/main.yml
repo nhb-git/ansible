@@ -17,22 +17,6 @@
         password    $CONTROL    pam_unix.so    sha512    shadow    remember=5    use_authtok
     backup: yes
 
-#- name: add shell login warning message
-#  blockinfile:
-#    path: /etc/motd
-#    block: |
-#        ----------------------------------Warning---------------------------------
-#                                  Authorised access only
-#
-#                       This system is the property of WWW.LENOVO.COM
-#
-#                  Disconnect IMMEDIATELY if you are not an authorized user
-#
-#                     Your IP has been IDS records Don't damage any files!
-#        --------------------------------------------------------------------------
-#    marker: ""
-#    backup: yes 
-
 - name: set password max available time
   lineinfile:
     path: /etc/login.defs
