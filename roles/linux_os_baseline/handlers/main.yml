@@ -2,3 +2,7 @@
 # handlers file for linux_os_baseline
 - name: reload sysctl
   shell: /usr/sbin/sysctl -p
+
+- name: restart_sshd
+  shell: /bin/systemctl restart sshd
+
