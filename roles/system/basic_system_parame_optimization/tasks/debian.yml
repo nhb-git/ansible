@@ -1,0 +1,43 @@
+- name: add config to sysctl.conf
+  blockinfile:
+    dest: /etc/sysctl.conf
+    block: |
+        net.ipv4.tcp_syncookies = 1
+        net.ipv4.tcp_max_syn_backlog = 8192
+        net.core.somaxconn = 50000
+        net.core.netdev_max_backlog = 100000
+        net.core.optmem_max = 61440
+        net.core.rmem_max = 10000000
+        net.core.wmem_max = 10000000
+        net.ipv4.tcp_tw_reuse = 1
+        net.ipv4.tcp_fin_timeout = 30
+        net.ipv4.tcp_max_tw_buckets = 10000
+        net.ipv4.tcp_keepalive_time = 1800
+        net.ipv4.tcp_keepalive_intvl = 30
+        net.ipv4.tcp_keepalive_probes = 3
+        net.ipv4.ip_local_port_range = 1024 65000
+    backup: yes
+    marker: "#  {mark} tcp system parame"
+  notify:
+    - reload sysctl_profile
+
+
+- name: modify nofile of limits.conf
+  blockinfile:
+    dest: /etc/security/limits.conf
+    block: |
+        * soft nofile 65535
+        * hard nofile 65535
+    backup: yes
+    marker: "#  {mark} set file number"
+
+- name: modify nofile in profile file
+  blockinfile:
+    dest: /etc/profile
+    block: |
+      ulimit -HSn 65535
+    backup: yes
+    marker: "#  {mark} set file number"
+
+- name: load profile
+  shell: . /etc/profile

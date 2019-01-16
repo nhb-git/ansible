@@ -1,0 +1,2 @@
+- name: Debian family  modify server's timezone to shanghai                                                                                                                                                               
+  copy: src=/usr/share/zoneinfo/Asia/Shanghai dest=/etc/localtime remote_src=yes

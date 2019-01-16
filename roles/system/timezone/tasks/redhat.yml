@@ -1,0 +1,28 @@
+---
+# tasks file for roles/system_parame_optimization
+- name: redhat family 7 modify server's timezone to shanghai                                                                                                                                                               
+  command: "timedatectl set-timezone {{ timezone }}"
+  when: ansible_distribution_major_version == "7"
+
+- name: RedHat7 add timezone cron
+  cron:
+    name: modify timezone to china timezone
+    user: root
+    job: timedatectl set-timezone {{ timezone }}
+    minute: "*/5"
+  when: ansible_distribution_major_version == "7"
+  tags: redhat7_timezone
+
+
+- name: redhat family 6 modify server's timezone to shanghai                                                                                                                                                               
+  copy: src=/usr/share/zoneinfo/{{ timezone }} dest=/etc/localtime remote_src=yes
+  when: ansible_distribution_major_version == "6"
+
+- name: RedHat6 add timezone cron
+  cron:
+    name: modify timezone to china timezone
+    user: root
+    job: cp /usr/share/zoneinfo/{{ timezone }} /etc/localtime
+    minute: "*/5"
+  when: ansible_distribution_major_version == "6"
+  tags: redhat6_timezone
