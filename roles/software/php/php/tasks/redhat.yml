@@ -1,0 +1,106 @@
+---
+# tasks file for php
+- name: install basic package
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ basic_software }}"
+  tags: install_basic_package
+
+- name: install centos basic package
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ centos_software }}"
+  when: ansible_distribution == "CentOS"
+  tags: install_centos_basic_package
+
+- name: create temp dir
+  file:
+    path: "{{ temp_dir }}"
+    state: directory
+  tags: create_temp_dir
+
+- name: load lib
+  lineinfile:
+    dest: "/etc/ld.so.conf"
+    line: "/usr/local/lib"
+
+- name: copy and unzip php's depend on package to target server
+  unarchive:
+    src: "{{ item.software_name }}.tar.gz"
+    dest: "{{ temp_dir }}"
+  with_items: "{{ depends_software }}"
+  tags: copy_package
+
+- name: install redhat platform php and php's depend on package
+  shell: >
+    cd {{ temp_dir }}/{{ item.software_name }} && {{ item.install_cmd }}
+  with_items:
+    - "{{ redhat_depends_software }}"
+    - "{{ depends_software }}"
+  when: ansible_distribution == "RedHat"
+  tags: install_redhat_php
+
+- name: install centos platform php and php's depend on package
+  shell: >
+    cd {{ temp_dir }}/{{ item.software_name }} && {{ item.install_cmd }}
+  with_items:
+    - "{{ depends_software }}"
+  when: ansible_distribution == "CentOS"
+  tags: install_centos_php
+
+- name: create php-fpm.d directory
+  file:
+    path: "{{ project_install_dir }}/etc/php-fpm.d"
+    state: directory
+  tags: create_php-fpm_dir
+
+- name: config php.ini
+  copy:
+    src: "{{ temp_dir }}/{{ project_name }}-{{ project_version }}/php.ini-production"
+    dest: "{{ project_install_dir }}/etc/php.ini"
+    mode: 0644
+    remote_src: yes
+  tags: config_php_ini
+
+- name: config php-fpm.conf
+  copy:
+    src: "{{ project_install_dir }}/etc/php-fpm.conf.default"
+    dest: "{{ project_install_dir }}/etc/php-fpm.conf"
+    remote_src: yes
+  notify: include_php-fpm.d
+
+- name: config www.conf
+  template:
+    src: www.conf.j2 
+    dest: "{{ project_install_dir }}/etc/php-fpm.d/www.conf"
+  tags: config_www
+
+- name: create project soft link
+  file:
+    src: "{{ project_install_dir }}"
+    dest: "{{ project_install_dir_softlink }}"
+    state: link
+  tags: soft_link
+
+- name: config service manage php
+  template:
+    src: init.d.php-fpm.j2
+    dest: /etc/init.d/php-fpm
+  when: ansible_distribution_major_version < "7"
+
+- name: config systemctl manage php
+  template: src=php-fpm.service.j2 dest=/usr/lib/systemd/system/php-fpm.service
+  when: ansible_distribution_major_version == "7"
+  notify: systemctl_php-fpm
+
+- name: delete more than 7 init.d php-fpm
+  file:
+    path: /etc/init.d/php-fpm
+    state: absent
+  when: ansible_distribution_major_version == "7"
+
+- name: clean temp dir
+  file: path={{ temp_dir }} state=absent
+  

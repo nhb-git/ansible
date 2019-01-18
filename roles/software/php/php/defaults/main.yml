@@ -1,0 +1,64 @@
+---
+# defaults file for php
+# php_dirname is php package was unziped directory name
+temp_dir: /tmp/install_php
+project_name: "php"
+project_version: "7.0.30"
+project_base_dir: "/usr/local/srv"
+project_install_dir: "{{ project_base_dir }}/{{ project_name }}-{{ project_version }}"
+project_install_dir_softlink: "{{ project_base_dir }}/{{ project_name }}"
+
+project_install_cmd: 
+  "./configure --prefix={{ project_install_dir }} 
+      --with-config-file-path={{ project_install_dir }}/etc --with-iconv-dir   --with-jpeg-dir 
+      --with-png-dir   --with-zlib   --with-libxml-dir   --enable-xml   --disable-rpath   
+      --enable-bcmath   --enable-shmop   --enable-sysvsem   --enable-inline-optimization   --with-curl   --enable-mbregex   
+      --enable-mbstring   --with-mcrypt   --with-gd   --with-freetype-dir   --enable-gd-native-ttf   --with-openssl   --with-mhash   
+      --enable-pcntl   --enable-sockets   --with-xmlrpc   --enable-zip   --enable-soap   --enable-session   --with-gettext   
+      --with-mysqli=mysqlnd   --with-pdo-mysql=mysqlnd   --enable-fpm   --with-bz2 --enable-ftp --disable-fileinfo   --enable-opcache  
+      --enable-maintainer-zts && make ZEND_EXTRA_LIBS='-liconv' && make install"
+
+redhat_depends_software:
+  - { software_name: "libmcrypt-2.5.8", install_cmd: "./configure && make && make install && ldconfig" }
+
+depends_software:
+  - { software_name: "libiconv-1.14", install_cmd: "./configure && make && make install && ldconfig" }
+  - { software_name: "libmemcached-1.0.18", install_cmd: "./configure && make && make install && ldconfig" }
+  - { software_name: "mcrypt-2.6.8", install_cmd: "LD_LIBRARY_PATH=/usr/local/lib ./configure && make && make install && ldconfig" }
+  - { software_name: "mhash-0.9.9.9", install_cmd: "./configure && make && make install && ldconfig" }
+  - { software_name: "{{ project_name }}-{{ project_version }}", install_cmd: "{{ project_install_cmd }}" }
+
+
+basic_software:
+  - cmake
+  - cyrus-sasl-devel
+  - libmemcached
+  - bison
+  - libxslt-devel
+  - autoconf
+  - libcur*
+  - libxml2
+  - bzip*
+  - bzip2-devel
+  - libxml2-devel
+  - openssl
+  - openssl-devel
+  - libjpeg
+  - libjpeg-devel
+  - libpng
+  - libpng-devel
+  - freetype-devel
+  - gmp-devel
+  - mysql-devel
+  - ncurses
+  - ncurses-devel
+  - unixODBC-devel
+  - net-snmp
+  - net-snmp-devel
+  - libsqlite3*
+  - sqlite*
+  - libcurl-devel
+
+centos_software:
+  - libmcrypt-devel
+  - libmcrypt*
