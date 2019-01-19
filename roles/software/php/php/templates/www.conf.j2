@@ -15,4 +15,4 @@ ping.path = /ping
 ping.response = pong
 request_terminate_timeout = 0
 request_slowlog_timeout = 10s
-slowlog = "{{ project_base_dir }}/{{ project_name }}-{{ project_version }}/var/log/$pool.log.slow"
+slowlog = "{{ project_info.base_dir }}/{{ project_info.name }}-{{ project_info.version }}/var/log/$pool.log.slow"

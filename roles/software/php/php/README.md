@@ -1,34 +1,22 @@
-php
+Role Name
 =========
 
-function:
-
-1. 支持安装不同版本php
+A brief description of the role goes here.
 
 Requirements
 ------------
 
-需要安装php的服务器能够访问到外网，方便yum在线安装依赖软件
+Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
 
 Role Variables
 --------------
 
-temp_dir: 存放安装包、执行安装程序的临时安装目录，有默认目录。
-project_name: 默认为php
-project_version： 软件版本，默认7.0.30
-project_base_dir： 软件安装的基础目录
-project_install_dir： 软件安装目录
-project_install_dir_softlink： 软件安装目录的软连接
-project_install_cmd：php软件编译安装命令
-redhat_depends_software： redhat系系统需要编译安装的依赖软件
-depends_software：编译安装的依赖软件
-basic_software： yum安装的软件列表
-centos_software：centos系统yum安装的软件列表
+A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
 
 Dependencies
 ------------
 
-php安装必须存在于files目录下，php软件包名称必须是 php-版本号.tar.gz，解压后的目录名必须是 php-版本号
+A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
 
 Example Playbook
 ----------------
@@ -37,11 +25,7 @@ Including an example of how to use your role (for instance, with variables passe
 
     - hosts: servers
       roles:
-         - { role: php, project_version: 7.0.30 }
-         或
-    - hosts: servers
-      roles:
-         - { role: php }
+         - { role: username.rolename, x: 42 }
 
 License
 -------
@@ -51,4 +35,4 @@ BSD
 Author Information
 ------------------
 
-mail: niuhb2@lenovo.com
+An optional section for the role authors to include contact information, or a website (HTML is not allowed).

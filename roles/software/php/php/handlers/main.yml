@@ -2,9 +2,9 @@
 # handlers file for php
 - name: include_php-fpm.d
   lineinfile: 
-    path: "{{ project_install_dir }}/etc/php-fpm.conf"
+    dest: "{{ project_info.base_dir }}/{{ project_info.name }}-{{ project_info.version }}/etc/php-fpm.conf"
     regexp: '^include=.*/php-fpm.d/\*\.conf'
-    line: include={{ project_install_dir }}/etc/php-fpm.d/*.conf
+    line: include={{ project_info.base_dir }}/{{ project_info.name }}-{{ project_info.version }}/etc/php-fpm.d/*.conf
 
 - name: systemctl_php-fpm
   shell: /usr/bin/systemctl daemon-reload && /usr/bin/systemctl enable php-fpm
