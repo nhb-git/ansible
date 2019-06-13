@@ -1,0 +1,74 @@
+---
+# tasks file for configuration
+- name: delete local base dir
+  become: false
+  local_action: file path="{{ configuration_info.dir_info.local_config_base_dir }}" state=absent
+
+- name: create local base dir
+  become: false
+  local_action: file path="{{ configuration_info.dir_info.local_config_base_dir }}" state=directory
+
+- name: sync app config before exec cmd
+  shell: "{{ configuration_info.action.config_before_cmd }}"
+  when: configuration_info.action.config_before_cmd != ''
+
+
+- name: pull config to local dir
+  become: false
+  run_once: yes
+  local_action: git repo="{{ configuration_info.config_addr }}" dest="{{ configuration_info.dir_info.local_config_base_dir }}"
+
+
+- name: get local dir's file info
+  become: false
+  local_action: shell ls -a "{{ configuration_info.dir_info.local_config_base_dir }}/{{ configuration_info.env }}/{{ configuration_info.app_name }}/" | grep -v -E '^.$' | grep -v -E '^..$' | xargs -n 1
+  run_once: yes
+  register: files_info
+
+
+- set_fact: files_name={{ files_info.stdout_lines }}
+
+
+- name: set backup time
+  shell: date "+%Y%m%d%H%M%S"
+  register: backup_time
+
+
+- set_fact:
+    backup_time: "{{ backup_time.stdout }}"
+
+
+- set_fact:
+    backup_dir: "{{ configuration_info.dir_info.backup_config_base_dir }}/{{ configuration_info.env }}/{{ configuration_info.app_name }}/{{ backup_time }}"
+
+
+- name: create backup dir
+  file:
+    path: "{{ backup_dir }}"
+    state: directory
+    owner: "{{ configuration_info.config_owner }}"
+
+
+- name: backup remote server's config
+  shell: >
+    cd {{ configuration_info.dir_info.remote_config_dir }}/;
+    if stat {{ item }} > /dev/null 2>&1; then mv {{ item }} {{ backup_dir }}; fi
+  with_items: "{{ files_name }}"
+
+
+- name: sync config to remote server
+  copy:
+    src: "{{ configuration_info.dir_info.local_config_base_dir }}/{{ configuration_info.env }}/{{ configuration_info.app_name }}/"
+    dest: "{{ configuration_info.dir_info.remote_config_dir }}"
+    owner: "{{ configuration_info.config_owner }}"
+
+
+- name: sync app config after exec cmd
+  shell: "{{ configuration_info.action.config_after_cmd }}"
+  when: configuration_info.action.config_after_cmd != ''
+
+
+- name: clean local ansible config dir
+  become: false
+  run_once: yes
+  local_action: file path="{{ configuration_info.dir_info.local_config_base_dir }}" state=absent

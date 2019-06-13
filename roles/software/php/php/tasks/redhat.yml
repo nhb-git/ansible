@@ -1,0 +1,124 @@
+---
+# tasks file for php
+- name: create dir
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ project_info.temp_dir }}"
+    - "{{ project_info.base_dir }}"
+  tags: create_dir
+
+- name: install basic package
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ software_info.basic_software }}"
+  tags: install_basic_package
+
+- name: install centos basic package
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ software_info.centos_software }}"
+  when: ansible_distribution == "CentOS"
+  tags: install_centos_basic_package
+
+- name: load lib
+  lineinfile:
+    dest: "/etc/ld.so.conf"
+    line: "/usr/local/lib"
+
+- name: copy and unzip install package to centos target server
+  unarchive:
+    src: "{{ software_info.depends_software[item.name][item.version].tar_name }}"
+    dest: "{{ project_info.temp_dir }}"
+  with_items:
+    - "{{ centos_current_depends_software }}"
+  when: ansible_distribution == "CentOS"
+  tags: copy_centos_package
+
+- name: copy and unzip install package to redhat target server
+  unarchive:
+    src: "{{ software_info.depends_software[item.name][item.version].tar_name }}"
+    dest: "{{ project_info.temp_dir }}"
+  with_items:
+    - "{{ redhat_current_depends_software }}"
+  when: ansible_distribution == "Red Hat Enterprise Linux"
+  tags: copy_redhat_package
+
+- name: install centos platform php and php's depend on package
+  shell: >
+    cd {{ project_info.temp_dir }}/{{ software_info.depends_software[item.name][item.version].unzip_dir_name }}
+    && {{ software_info.depends_software[item.name][item.version].install_cmd }}
+  with_items:
+    - "{{ centos_current_depends_software }}"
+  when: ansible_distribution == "CentOS"
+  tags: install_centos_php
+
+- name: install redhat platform php and php's depend on package
+  shell: >
+    cd {{ project_info.temp_dir }}/{{ software_info.depends_software[item.name][item.version].unzip_dir_name }}
+    && {{ software_info.depends_software[item.name][item.version].install_cmd }}
+  with_items:
+    - "{{ redhat_current_depends_software }}"
+  when: ansible_distribution == "Red Hat Enterprise Linux"
+  tags: install_redhat_php
+
+- name: create php-fpm.d directory
+  file:
+    path: "{{ project_info.base_dir }}/{{ project_info.name }}-{{ project_info.version }}/etc/php-fpm.d"
+    state: directory
+  tags: create_php-fpm_dir
+
+- name: config php.ini
+  copy:
+    src: "{{ project_info.temp_dir }}/{{ software_info.depends_software[item.name][item.version].unzip_dir_name }}/php.ini-production"
+    dest: "{{ project_info.base_dir }}/{{ project_info.name }}-{{ project_info.version }}/etc/php.ini"
+    mode: 0644
+    remote_src: yes
+  with_items:
+    - "{{ redhat_current_depends_software }}"
+  when: item.name == 'php'
+  tags: config_php_ini
+
+- name: config php-fpm.conf
+  copy:
+    src: "{{ project_info.base_dir }}/{{ project_info.name }}-{{ project_info.version }}/etc/php-fpm.conf.default"
+    dest: "{{ project_info.base_dir }}/{{ project_info.name }}-{{ project_info.version }}/etc/php-fpm.conf"
+    remote_src: yes
+  notify: include_php-fpm.d
+  tags: config_php-fpm_ini
+
+- name: config www.conf
+  template:
+    src: www.conf.j2 
+    dest: "{{ project_info.base_dir }}/{{ project_info.name }}-{{ project_info.version }}/etc/php-fpm.d/www.conf"
+  tags: config_www
+
+- name: create project soft link
+  file:
+    src: "{{ project_info.base_dir }}/{{ project_info.name }}-{{ project_info.version }}"
+    dest: "{{ project_info.base_dir }}/{{ project_info.name }}"
+    state: link
+  tags: soft_link
+
+- name: config service manage php
+  template:
+    src: init.d.php-fpm.j2
+    dest: /etc/init.d/php-fpm
+  when: ansible_distribution_major_version < "7"
+
+- name: config systemctl manage php
+  template: src=php-fpm.service.j2 dest=/usr/lib/systemd/system/php-fpm.service
+  when: ansible_distribution_major_version == "7"
+  notify: systemctl_php-fpm
+
+- name: delete more than 7 init.d php-fpm
+  file:
+    path: /etc/init.d/php-fpm
+    state: absent
+  when: ansible_distribution_major_version == "7"
+
+- name: clean temp dir
+  file: path={{ project_info.temp_dir }} state=absent

@@ -1,0 +1,14 @@
+---
+# tasks file for nginx
+
+# Variable setup
+- name: Include OS-specific variables
+  include_vars: "{{ ansible_distribution }}.yml"
+
+- name: Define nginx user
+  set_fact:
+    nginx_user: "{{ __nginx_user }}"
+  when: nginx_user is not defined
+
+- include: setup_CentOS.yml
+  when: ansible_distribution == 'CentOS'

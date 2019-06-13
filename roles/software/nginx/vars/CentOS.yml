@@ -1,0 +1,121 @@
+---
+# vars file for nginx
+software_info: {
+    basic_software: [
+      "gcc",
+      "gcc-c++",
+      "automake",
+      "zlib",
+      "zlib-devel",
+      "openssl",
+      "openssl-devel",
+      "openssl-libs",
+      "openssl-static",
+      "pcre",
+      "pcre-devel",
+      "pcre-static",
+      "libmcrypt*"
+    ],
+
+    current_depends_software: [
+      { name: "LuaJIT", version: "_2_0_5" },
+      { name: "lua-nginx-module", version: "_0_10_13" },
+      { name: "nginx-goodies-nginx-sticky-module-ng", version: "_08a395c66e42" },
+      { name: "nginx-http-concat", version: "_1_0" },
+      { name: "nginx-module-vts", version: "_0_1_18" },
+      { name: "nginx_upstream_check_module", version: "_0_3_0" },
+      { name: "ngx_devel_kit", version: "_0_3_0" },
+      { name: "nginx", version: "_{{ project_info.version.split('.') | join('_')}}" }
+    ],
+
+    depends_software_info: {
+      nginx: {
+        _1_16_0: {
+          tar_name: "nginx-1.16.0.tar.gz",
+          unzip_dir_name: "nginx-1.16.0",
+          install_cmd: "export LUAJIT_INC=/data/server/LuaJIT-2.0.5/include/luajit-2.0 && export LUAJIT_LIB=/data/server/LuaJIT-2.0.5/lib
+            && ./configure --prefix={{ project_info.base_dir }}/{{ project_info.name }}-{{ project_info.version }} 
+            --with-http_realip_module   --user={{ nginx_user }} --group=wheel --with-http_ssl_module 
+            --with-http_addition_module --with-http_sub_module --with-http_dav_module --with-http_flv_module 
+            --with-http_mp4_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_random_index_module 
+            --with-http_secure_link_module --with-http_stub_status_module --with-http_auth_request_module 
+            --with-threads --with-stream --with-stream_ssl_module --with-http_slice_module --with-mail --with-mail_ssl_module 
+            --with-file-aio --with-http_v2_module --with-ipv6 --with-pcre  --add-module={{ project_info.temp_dir }}/lua-nginx-module-0.10.13  
+            --add-module={{ project_info.temp_dir }}/ngx_devel_kit-0.3.0  --add-module={{ project_info.temp_dir }}/nginx-module-vts-0.1.18 
+            --add-module={{ project_info.temp_dir }}/nginx_upstream_check_module-0.3.0 --add-module={{ project_info.temp_dir }}/nginx-http-concat  
+            --add-module={{ project_info.temp_dir }}/nginx-goodies-nginx-sticky-module-ng-08a395c66e42 && make && make install",
+        },
+      },
+
+      LuaJIT: {
+        _2_0_5: {
+          tar_name: "LuaJIT-2.0.5.tar.gz",
+          unzip_dir_name: "LuaJIT-2.0.5",
+          install_cmd: "make install PREFIX=/data/server/LuaJIT-2.0.5 &&
+           rm -rf /data/server/LuaJIT && ln -s /data/server/LuaJIT-2.0.5 
+           /data/server/LuaJIT",
+        }
+      },
+
+      lua-nginx-module: {
+        _0_10_13: {
+          tar_name: "lua-nginx-module-0.10.13.tar.gz",
+          unzip_dir_name: "lua-nginx-module-0.10.13",
+          install_cmd: "echo 'success'",
+        }
+      }, 
+
+      nginx-goodies-nginx-sticky-module-ng: {
+        _08a395c66e42: {
+          tar_name: "nginx-goodies-nginx-sticky-module-ng-08a395c66e42.tar.gz",
+          unzip_dir_name: "nginx-goodies-nginx-sticky-module-ng-08a395c66e42",
+          install_cmd: "echo 'success'",
+        }
+      }, 
+
+      nginx-http-concat: {
+        _1_0: {
+          tar_name: "nginx-http-concat.tar.gz",
+          unzip_dir_name: "nginx-http-concat",
+          install_cmd: "echo 'success'",
+        }
+      }, 
+
+      nginx-module-vts: {
+        _0_1_18: {
+          tar_name: "nginx-module-vts-0.1.18.tar.gz",
+          unzip_dir_name: "nginx-module-vts-0.1.18",
+          install_cmd: "echo 'success'",
+        }
+      }, 
+
+      nginx_upstream_check_module: {
+        _0_3_0: {
+          tar_name: "nginx_upstream_check_module-0.3.0.tar.gz",
+          unzip_dir_name: "nginx_upstream_check_module-0.3.0",
+          install_cmd: "echo 'success'",
+        }
+      }, 
+
+      ngx_devel_kit: {
+        _0_3_0: {
+          tar_name: "ngx_devel_kit-0.3.0.tar.gz",
+          unzip_dir_name: "ngx_devel_kit-0.3.0",
+          install_cmd: "echo 'success'",
+        }
+      }, 
+
+  }
+}
+
+env_variable: [
+    { variable: "export LUAJIT_LIB=/data/server/LuaJIT/lib", path: "/etc/profile" },
+    { variable: "export LUAJIT_INC=/data/server/LuaJIT/include/luajit-2.0", path: "/etc/profile" },
+    { variable: "/data/server/LuaJIT/lib", path: "/etc/ld.so.conf" }
+]
+
+reload_env_shell: [
+    ". /etc/profile",
+    "ldconfig"
+]
+__nginx_user: "nobody"

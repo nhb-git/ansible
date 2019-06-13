@@ -1,0 +1,105 @@
+- name: create dir
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ project_info.temp_dir }}"
+    - "{{ project_info.base_dir }}"
+  tags: create_dir
+
+- name: install basic package
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ software_info.basic_software }}"
+  tags: install_basic_package
+
+- name: install centos basic package
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ software_info.centos_software }}"
+  when: ansible_distribution == "CentOS"
+  tags: install_centos_basic_package
+
+- name: copy and unzip install package to centos target server
+  unarchive:
+    src: "{{ software_info.depends_software[item.name][item.version].tar_name }}"
+    dest: "{{ project_info.temp_dir }}"
+  with_items:
+    - "{{ centos_current_depends_software }}"
+  when: ansible_distribution == "CentOS"
+  tags: copy_centos_package
+
+- name: copy and unzip install package to redhat target server
+  unarchive:
+    src: "{{ software_info.depends_software[item.name][item.version].tar_name }}"
+    dest: "{{ project_info.temp_dir }}"
+  with_items:
+    - "{{ redhat_current_depends_software }}"
+  when: ansible_distribution == "Red Hat Enterprise Linux"
+  tags: copy_redhat_package
+
+- name: install centos platform python and python's depend on package
+  shell: >
+    cd {{ project_info.temp_dir }}/{{ software_info.depends_software[item.name][item.version].unzip_dir_name }}
+    && {{ software_info.depends_software[item.name][item.version].install_cmd }}
+  with_items:
+    - "{{ centos_current_depends_software }}"
+  when: ansible_distribution == "CentOS"
+  tags: install_centos_python
+
+- name: install redhat platform python and python's depend on package
+  shell: >
+    cd {{ project_info.temp_dir }}/{{ software_info.depends_software[item.name][item.version].unzip_dir_name }}
+    && {{ software_info.depends_software[item.name][item.version].install_cmd }}
+  with_items:
+    - "{{ redhat_current_depends_software }}"
+  when: ansible_distribution == "Red Hat Enterprise Linux"
+  tags: install_redhat_python
+
+- name: create project soft link
+  file:
+    src: "{{ project_info.base_dir }}/{{ project_info.name }}-{{ project_info.version }}"
+    dest: "{{ project_info.base_dir }}/{{ project_info.name }}"
+    state: link
+  tags: soft_link
+
+- name: create python bin and pip soft link
+  file:
+    src: "{{ project_info.base_dir }}/{{ project_info.name }}-{{ project_info.version }}/bin/{{ item }}"
+    dest: "/bin/{{ item }}"
+    state: link
+  with_items:
+    - "python{{ project_info.version.split('.')[0] }}"
+    - "pip{{ project_info.version.split('.')[0] }}"
+
+- name: create pip source file dir 
+  file:
+    path: "{{ software_info.depends_software[item.name][item.version].pip_conf_dir }}"
+    owner: "{{ ansible_ssh_user }}"
+    state: directory
+  with_items:
+    - "{{ centos_current_depends_software }}"
+  when: item.name == 'python'
+
+- name: add douban pip source
+  copy:
+    src: pip.conf
+    dest: "{{ software_info.depends_software[item.name][item.version].pip_conf_dir }}"
+    owner: "{{ ansible_ssh_user }}"
+  with_items:
+    - "{{ centos_current_depends_software }}"
+  when: software_info.depends_software[item.name][item.version].douban_source == true and item.name == 'python'
+
+- name: install virtualenv
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - python-virtualenv
+
+- name: clean tmp dir
+  file:
+    name: "{{ project_info.temp_dir }}"
+    state: absent

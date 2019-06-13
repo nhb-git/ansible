@@ -1,0 +1,7 @@
+- name: add hosts maping to /etc/hosts
+  blockinfile:
+    dest: /etc/hosts
+    block: |
+      {{ item.ip }} {{ item.name }}
+    marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item.name }}"
+  with_items: "{{ hosts_maping }}"

@@ -1,0 +1,15 @@
+---
+# tasks file for php_cphalcon
+- name: create temp directory in remote server
+  file: path={{ temp_cphalcon_dir }} state=directory
+
+- name: copy and unzip php's redis module to temp directory in remote server 
+  unarchive: src={{ cphalcon_name }} dest={{ temp_cphalcon_dir }}
+
+- name: install cphalcon module 
+  shell: >
+         cd {{ temp_cphalcon_dir }}/*/build && ./install --phpize {{ php_home }}/bin/phpize 
+         --php-config {{ php_home }}/bin/php-config
+
+- name: clean cphalcon install package
+  file: path={{ temp_cphalcon_dir }} state=absent

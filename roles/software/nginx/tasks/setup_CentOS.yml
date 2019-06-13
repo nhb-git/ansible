@@ -1,0 +1,77 @@
+---
+# tasks file for php
+- name: create dir
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ project_info.temp_dir }}"
+    - "{{ project_info.base_dir }}"
+  tags: create_dir
+
+- name: install basic software
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ software_info.basic_software }}"
+  tags: install_basic_software
+
+- name: copy and unzip install package to centos target server
+  unarchive:
+    src: "{{ software_info.depends_software_info[item.name][item.version].tar_name }}"
+    dest: "{{ project_info.temp_dir }}"
+  with_items:
+    - "{{ software_info.current_depends_software }}"
+  tags: copy_software_package
+
+- name: install software
+  shell: >
+    cd {{ project_info.temp_dir }}/{{ software_info.depends_software_info[item.name][item.version].unzip_dir_name }}
+    && {{ software_info.depends_software_info[item.name][item.version].install_cmd }}
+  with_items:
+    - "{{ software_info.current_depends_software }}"
+  tags: install_software
+
+- name: add env variable and lib depend
+  blockinfile:
+    dest: "{{ item.path }}"
+    block: |
+      {{ item.variable }}
+    marker: "# {mark} {{ item.variable }}"
+  with_items: "{{ env_variable }}"
+  when: env_variable != []
+
+- name: reload env variable and lib
+  shell: "{{ item }}"
+  with_items: "{{ reload_env_shell }}"
+
+- name: create project soft link
+  file:
+    src: "{{ project_info.base_dir }}/{{ project_info.name }}-{{ project_info.version }}"
+    dest: "{{ project_info.base_dir }}/{{ project_info.name }}"
+    state: link
+  tags: soft_link
+
+- name: config service manage software
+  template:
+    src: "init.d.{{ project_info.name }}.j2"
+    dest: "/etc/init.d/{{ project_info.name }}"
+  when: ansible_distribution_major_version < "7"
+
+- name: config systemctl manage software
+  template:
+    src: "{{ project_info.name }}.service.j2"
+    dest: "/usr/lib/systemd/system/{{ project_info.name }}.service"
+  when: ansible_distribution_major_version == "7"
+  notify: systemctl_software
+
+- name: delete more than 7 init.d software
+  file:
+    path: /etc/init.d/{{ project_info.name }}
+    state: absent
+  when: ansible_distribution_major_version == "7"
+
+- name: clean temp dir
+  file:
+    path: "{{ project_info.temp_dir }}"
+    state: absent

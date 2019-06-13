@@ -1,0 +1,59 @@
+---
+# defaults file for common_software
+redhat_repo:
+  - epel-release
+redhat_software_lists: 
+  - "@Development tools"
+  - gcc
+  - gcc-c++
+  - make
+  - cmake
+  - telnet
+  - cyrus-sasl-devel
+  - git 
+  - curl 
+  - vim
+  - unzip
+  - zip
+  - zlib
+  - zlib-devel
+  - zlib-static
+  - perl
+  - perl-devel
+  - wget
+  - net-tools
+  - pcre-devel
+  - pcre
+  - pcre-static
+  - openssl-devel
+  - libcurl-devel
+  - libcurl
+  - rsync
+  - bzip2-devel
+  - ntp
+  - tmux
+
+debian_software_lists:
+  - build-essential
+  - gcc
+  - g++
+  - make
+  - telnet
+  - sasl2-bin
+  - git 
+  - curl 
+  - vim
+  - unzip
+  - zip
+  - zlib*
+  - perl
+  - wget
+  - net-tools
+  - libpcre3
+  - libpcre3-dev
+  - libssl-dev
+  - zlib1g-dev
+  - rsync
+  - libbz2-dev
+  - ntp
+  - tmux

@@ -1,0 +1,9 @@
+---
+# handlers file for php_cphalcon
+- name: add_cphalcon
+  lineinfile:
+    path: "{{ php_conf }}"
+    line: extension=phalcon.so
+
+- name: restart_php-fpm
+  shell: service php-fpm restart || systemctl restart php-fpm

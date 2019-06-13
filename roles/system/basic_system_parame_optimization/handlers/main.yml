@@ -1,0 +1,4 @@
+---
+# handlers file for roles/system_parame_optimization
+- name: reload sysctl_profile
+  shell: sysctl -p

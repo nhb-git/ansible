@@ -1,0 +1,132 @@
+---
+# defaults file for php
+# php_dirname is php package was unziped directory name
+project_info: {
+  name: php,
+  version: "{{ project_version }}",
+  temp_dir: /tmp/ansible,
+  base_dir: /usr/local
+}
+
+centos_current_depends_software: [
+  { name: libiconv, version: _1_14 },
+  { name: libmemcached, version: _1_0_18 },
+  { name: mhash, version: _0_9_9_9 },
+  { name: mcrypt, version: _2_6_8 },
+  { name: php, version: "_{{ project_info.version.split('.') | join('_')}}" },
+]
+
+redhat_current_depends_software: [
+  { name: libiconv, version: _1_14 },
+  { name: libmemcached, version: _1_0_18 },
+  { name: libmcrypt, version: _2_5_8 },
+  { name: mhash, version: _0_9_9_9 },
+  { name: mcrypt, version: _2_6_8 },
+  { name: php, version: "_{{ project_info.version.split('.') | join('_')}}" },
+]
+
+
+
+software_info: {
+  basic_software: [
+      cmake,cyrus-sasl-devel,libmemcached,bison,libxslt-devel,autoconf,libcur*,
+      libxml2,bzip*,bzip2-devel,libxml2-devel,openssl,openssl-devel,libjpeg,
+      libjpeg-devel,libpng,libpng-devel,freetype-devel,gmp-devel,mysql-devel,
+      ncurses,ncurses-devel,unixODBC-devel,net-snmp,net-snmp-devel,libsqlite3*,sqlite*,libcurl-devel
+  ],
+
+  centos_software: [
+      libmcrypt*
+  ],
+
+  depends_software: {
+      php: {
+        _7_0_30: {
+          tar_name: php-7.0.30.tar.gz,
+          unzip_dir_name: php-7.0.30,
+          install_cmd: "./configure --prefix={{ project_info.base_dir }}/{{ project_info.name }}-{{ project_info.version }}
+              --with-config-file-path={{ project_info.base_dir }}/{{ project_info.name }}-{{ project_info.version }}/etc
+              --with-iconv-dir   --with-jpeg-dir --with-png-dir   --with-zlib   --with-libxml-dir   --enable-xml   --disable-rpath   
+              --enable-bcmath   --enable-shmop   --enable-sysvsem   --enable-inline-optimization   --with-curl
+              --enable-mbregex --enable-mbstring   --with-mcrypt   --with-gd   --with-freetype-dir   --enable-gd-native-ttf
+              --with-openssl   --with-mhash --enable-pcntl   --enable-sockets   --with-xmlrpc   --enable-zip   --enable-soap
+              --enable-session   --with-gettext --with-mysqli=mysqlnd   --with-pdo-mysql=mysqlnd   --enable-fpm   --with-bz2
+              --enable-ftp --disable-fileinfo   --enable-opcache --enable-maintainer-zts && make ZEND_EXTRA_LIBS='-liconv' && make install"
+        },
+        _7_2_1: {
+          tar_name: php-7.2.1.tar.gz,
+          unzip_dir_name: php-7.2.1,
+          install_cmd: "./configure --prefix={{ project_info.base_dir }}/{{ project_info.name }}-{{ project_info.version }}
+              --with-config-file-path={{ project_info.base_dir }}/{{ project_info.name }}-{{ project_info.version }}/etc
+              --with-iconv-dir   --with-jpeg-dir --with-png-dir   --with-zlib   --with-libxml-dir   --enable-xml   --disable-rpath   
+              --enable-bcmath   --enable-shmop   --enable-sysvsem   --enable-inline-optimization   --with-curl
+              --enable-mbregex --enable-mbstring   --with-mcrypt   --with-gd   --with-freetype-dir   --enable-gd-native-ttf
+              --with-openssl   --with-mhash --enable-pcntl   --enable-sockets   --with-xmlrpc   --enable-zip   --enable-soap
+              --enable-session   --with-gettext --with-mysqli=mysqlnd   --with-pdo-mysql=mysqlnd   --enable-fpm   --with-bz2
+              --enable-ftp --disable-fileinfo   --enable-opcache --enable-maintainer-zts && make ZEND_EXTRA_LIBS='-liconv' && make install"
+        },
+        _7_0_8: {
+          tar_name: php-7.0.8.tar.gz,
+          unzip_dir_name: php-7.0.8,
+          install_cmd: "./configure --prefix={{ project_info.base_dir }}/{{ project_info.name }}-{{ project_info.version }}
+              --with-config-file-path={{ project_info.base_dir }}/{{ project_info.name }}-{{ project_info.version }}/etc
+              --with-iconv-dir   --with-jpeg-dir --with-png-dir   --with-zlib   --with-libxml-dir   --enable-xml   --disable-rpath   
+              --enable-bcmath   --enable-shmop   --enable-sysvsem   --enable-inline-optimization   --with-curl
+              --enable-mbregex --enable-mbstring   --with-mcrypt   --with-gd   --with-freetype-dir   --enable-gd-native-ttf
+              --with-openssl   --with-mhash --enable-pcntl   --enable-sockets   --with-xmlrpc   --enable-zip   --enable-soap
+              --enable-session   --with-gettext --with-mysqli=mysqlnd   --with-pdo-mysql=mysqlnd   --enable-fpm   --with-bz2
+              --enable-ftp --disable-fileinfo   --enable-opcache --enable-maintainer-zts && make ZEND_EXTRA_LIBS='-liconv' && make install"
+        },
+        _5_6_30: {
+          tar_name: php-5.6.30.tar.gz,
+          unzip_dir_name: php-5.6.30,
+          install_cmd: "./configure --prefix={{ project_info.base_dir }}/{{ project_info.name }}-{{ project_info.version }}
+              --with-config-file-path={{ project_info.base_dir }}/{{ project_info.name }}-{{ project_info.version }}/etc
+              --with-iconv-dir   --with-jpeg-dir --with-png-dir   --with-zlib   --with-libxml-dir   --enable-xml   --disable-rpath   
+              --enable-bcmath   --enable-shmop   --enable-sysvsem   --enable-inline-optimization   --with-curl
+              --enable-mbregex --enable-mbstring   --with-mcrypt   --with-gd   --with-freetype-dir   --enable-gd-native-ttf
+              --with-openssl   --with-mhash --enable-pcntl   --enable-sockets   --with-xmlrpc   --enable-zip   --enable-soap
+              --enable-session   --with-gettext --with-mysqli=mysqlnd   --with-pdo-mysql=mysqlnd   --enable-fpm   --with-bz2
+              --enable-ftp --disable-fileinfo   --enable-opcache --enable-maintainer-zts && make ZEND_EXTRA_LIBS='-liconv' && make install"
+        }
+      },
+
+      libiconv: {
+        _1_14: {
+          tar_name: libiconv-1.14.tar.gz,
+          unzip_dir_name: libiconv-1.14,
+          install_cmd: "./configure && make && make install && ldconfig"
+        }
+      },
+      libmemcached: {
+        _1_0_18: {
+          tar_name: libmemcached-1.0.18.tar.gz,
+          unzip_dir_name: libmemcached-1.0.18,
+          install_cmd: "./configure && make && make install && ldconfig"
+        }
+      },
+      mcrypt: {
+        _2_6_8: {
+          tar_name: mcrypt-2.6.8.tar.gz,
+          unzip_dir_name: mcrypt-2.6.8,
+          install_cmd: "LD_LIBRARY_PATH=/usr/local/lib ./configure && make && make install && ldconfig"
+        }
+      },
+      mhash: {
+        _0_9_9_9: {
+          tar_name: mhash-0.9.9.9.tar.gz,
+          unzip_dir_name: mhash-0.9.9.9,
+          install_cmd: "./configure && make && make install && ldconfig" 
+        }
+      },
+      libmcrypt: {
+        _2_5_8: {
+          tar_name: libmcrypt-2.5.8.tar.gz,
+          unzip_dir_name: libmcrypt-2.5.8,
+          install_cmd: "./configure && make && make install && ldconfig"
+        }
+      }
+
+  },
+
+}

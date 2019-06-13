@@ -1,0 +1,9 @@
+---
+# defaults file for php
+# php_dirname is php package was unziped directory name
+project_info: {
+  name: nginx,
+  version: "{{ project_version | default('1.16.0') }}",
+  temp_dir: /tmp/ansible,
+  base_dir: /usr/local
+}

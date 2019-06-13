@@ -1,0 +1,7 @@
+- name: install ntp
+  apt:
+    name: ntp
+    state: present
+
+- name: server startup load ntp
+  command: "update-rc.d -f ntp defaults"

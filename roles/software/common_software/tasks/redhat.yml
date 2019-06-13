@@ -1,0 +1,7 @@
+- name: install third repo
+  yum: name={{ item }} state=latest
+  with_items: "{{ redhat_repo }}"
+
+- name: install common software
+  yum: name={{ item }} state=present
+  with_items: "{{ redhat_software_lists }}"

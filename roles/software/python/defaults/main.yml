@@ -1,0 +1,48 @@
+---
+# defaults file for python
+project_info: {
+  name: python,
+  version: "{{ project_version }}",
+  temp_dir: /tmp/ansible,
+  base_dir: /usr/local,
+}
+
+centos_current_depends_software: [
+  { name: python, version: "_{{ project_info.version.split('.') | join('_')}}" },
+]
+
+redhat_current_depends_software: [
+  { name: python, version: "_{{ project_info.version.split('.') | join('_')}}" },
+]
+
+
+software_info: {
+  basic_software: [
+    openssl-static
+  ],
+
+  centos_software: [
+  ],
+
+  depends_software: {
+      python: {
+        _3_6_5: {
+          tar_name: python-3.6.5.tar.gz,
+          unzip_dir_name: python-3.6.5,
+          douban_source: "{{ douban_source | default('false') }}",
+          pip_conf_dir: "{{ ansible_env.PWD }}/.pip",
+          install_cmd: "./configure --prefix={{ project_info.base_dir }}/{{ project_info.name }}-{{ project_info.version }} 
+                          --enable-optimizations && make && make install"
+        },
+        _3_6_8: {
+          tar_name: Python-3.6.8.tar.gz,
+          unzip_dir_name: Python-3.6.8,
+          douban_source: "{{ douban_source | default('false') }}",
+          pip_conf_dir: "{{ ansible_env.PWD }}/.pip",
+          install_cmd: "./configure --prefix={{ project_info.base_dir }}/{{ project_info.name }}-{{ project_info.version }} 
+                          --enable-optimizations && make && make install"
+        },
+      },
+  }
+
+}
