@@ -1,0 +1,5 @@
+---
+# handlers file for php
+- name: systemctl_software
+  shell: /usr/bin/systemctl daemon-reload && /usr/bin/systemctl enable nginx
+

@@ -4,8 +4,8 @@ After=syslog.target network.target
 
 [Service]
 Type=simple
-PIDFile="{{ project_install_dir_softlink }}/var/run/php-fpm.pid"
-ExecStart="{{ project_install_dir_softlink }}/sbin/php-fpm" --nodaemonize --fpm-config "{{ project_install_dir_softlink }}/etc/php-fpm.conf"
+PIDFile="{{ project_info.base_dir }}/{{ project_info.name }}/var/run/php-fpm.pid"
+ExecStart="{{ project_info.base_dir }}/{{ project_info.name }}/sbin/php-fpm" --nodaemonize --fpm-config "{{ project_info.base_dir }}/{{ project_info.name }}/etc/php-fpm.conf"
 ExecReload=/bin/kill -USR2 $MAINPID
 
 [Install]

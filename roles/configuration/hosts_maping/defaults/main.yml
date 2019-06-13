@@ -1,0 +1,6 @@
+---
+# defaults file for hosts_maping
+
+# hosts_maping:
+#  - { name: jira.xpaas.lenovo.com, ip: 10.96.110.11 }
+#  - { name: poprd.lenovo.com, ip: 10.96.232.15 }

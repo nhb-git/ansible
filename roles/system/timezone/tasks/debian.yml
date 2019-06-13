@@ -1,2 +1,7 @@
-- name: Debian family  modify server's timezone to shanghai                                                                                                                                                               
-  copy: src=/usr/share/zoneinfo/Asia/Shanghai dest=/etc/localtime remote_src=yes
+- name: install ntp
+  apt:
+    name: ntp
+    state: present
+
+- name: server startup load ntp
+  command: "update-rc.d -f ntp defaults"

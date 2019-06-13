@@ -1,0 +1,9 @@
+---
+# tasks file for hosts_maping
+- name: load redhat script
+  include: redhat.yml
+  when: ansible_os_family == "RedHat"
+
+- name: load debian script
+  include: debian.yml
+  when: ansible_os_family == "Debian"

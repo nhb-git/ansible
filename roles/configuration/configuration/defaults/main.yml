@@ -1,0 +1,17 @@
+---
+# defaults file for configuration
+configuration_info: {
+    app_name: "{{ app_name | default('') }}",
+    config_owner: "{{ config_owner | default(ansible_user) }}",
+    env: "{{ env | default('') }}",
+    config_addr: "{{ config_addr | default('') }}",
+    dir_info: {
+        local_config_base_dir: /tmp/ansible-config,
+        remote_config_dir: "{{ remote_config_dir | default('/tmp') }}",
+        backup_config_base_dir: "/data/backup/ansible"
+    },
+    action: {
+        config_before_cmd: "{{ config_before_cmd | default('') }}",
+        config_after_cmd: "{{ config_after_cmd | default('') }}"
+    }
+}

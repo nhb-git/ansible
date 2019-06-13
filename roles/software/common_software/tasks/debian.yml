@@ -1,0 +1,5 @@
+---
+# tasks file for common_software
+- name: install debian family common_software
+  apt: name={{ item }} state=present
+  with_items: "{{ debian_software_lists }}"

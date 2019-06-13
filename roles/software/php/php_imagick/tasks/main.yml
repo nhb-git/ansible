@@ -1,0 +1,21 @@
+---
+# tasks file for php_cphalcon
+- name: create temp directory in remote server
+  file: path={{ temp_dir }} state=directory
+
+- name: copy and unzip php's redis module to temp directory in remote server 
+  unarchive: src={{ imagick_name }} dest={{ temp_dir }}
+
+- name: install ImageMagick-devel
+  yum:
+    name: ImageMagick-devel
+    state: present
+
+- name: install imagick module 
+  shell: >
+         cd {{ temp_dir }}/imagick-3.4.3 ; {{ php_home }}/bin/phpize ;
+         ./configure --with-php-config={{ php_home }}/bin/php-config;
+         make && make install
+
+- name: clean imagick install package
+  file: path={{ temp_dir }} state=absent
