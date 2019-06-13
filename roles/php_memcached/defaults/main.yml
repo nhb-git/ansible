@@ -1,5 +1,0 @@
----
-# defaults file for php_memcached
-temp_memcached_dir: /tmp/php_memcached
-memcached_name: php-memcached-php7.tar.gz
-php_conf: "{{ php_home }}/etc/php.ini"

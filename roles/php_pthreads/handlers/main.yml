@@ -1,6 +1,0 @@
----
-# handlers file for php_pthreads
-- name: add_pthreads
-  lineinfile: 
-    path: "{{ php_conf }}"
-    line: extension=pthreads.so

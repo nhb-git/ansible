@@ -1,6 +1,0 @@
----
-# handlers file for php_memcached
-- name: add_memcached
-  lineinfile:
-    path: "{{ php_conf }}"
-    line: extension=memcached.so

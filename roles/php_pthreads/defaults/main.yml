@@ -1,5 +1,0 @@
----
-# defaults file for php_pthreads
-temp_pthreads_dir: /tmp/php_pthreads
-pthreads_name: pthreads-3.1.6.tgz
-php_conf: "{{ php_home }}/etc/php.ini"
