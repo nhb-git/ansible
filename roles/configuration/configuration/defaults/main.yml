@@ -6,9 +6,10 @@ configuration_info: {
     env: "{{ env | default('') }}",
     config_addr: "{{ config_addr | default('') }}",
     dir_info: {
-        local_config_base_dir: /tmp/ansible-config,
+        local_config_base_dir: ./tmp_ansible-config,
         remote_config_dir: "{{ remote_config_dir | default('/tmp') }}",
-        backup_config_base_dir: "/data/backup/ansible"
+        backup_config_base_dir: "/data/backup/ansible",
+        remote_temp_base_dir: "/tmp"
     },
     action: {
         config_before_cmd: "{{ config_before_cmd | default('') }}",

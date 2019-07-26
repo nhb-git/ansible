@@ -46,14 +46,14 @@ Including an example of how to use your role (for instance, with variables passe
 
     - hosts: servers
       roles:
-         - { role: configuration/configuration, env: prod, app_name: 'example',
-            config_addr: 'git@gitlab.example.com:CBP-Application/example.git',
+         - { role: configuration/configuration, env: prod, app_name: 'mds-ai',
+            config_addr: 'git@gitlab.xpaas.lenovo.com:CBP-Application/MDS-AI-CONFIG.git',
             remote_config_dir: /tmp }
           或
     - hosts: servers
       roles:
-         - { role: configuration/configuration, env: prod, app_name: 'example',
-            config_addr: 'git@gitlab.example.com:CBP-Application/example.git',
+         - { role: configuration/configuration, env: prod, app_name: 'mds-ai',
+            config_addr: 'git@gitlab.xpaas.lenovo.com:CBP-Application/MDS-AI-CONFIG.git',
             remote_config_dir: /tmp, config_owner: 'xopsadmin' }
 
 License
