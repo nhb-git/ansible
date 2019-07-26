@@ -1,6 +1,6 @@
 ---
 # defaults file for php_cphalcon
-php_home: /usr/local/lenovosrv/php
+php_home: /usr/local/php
 temp_dir: /tmp/ansible
 imagick_name: imagick-3.4.3.tgz
 php_conf: "{{ php_home }}/etc/php.ini"

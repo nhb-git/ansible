@@ -1,6 +1,6 @@
 ---
 # defaults file for php_pthreads
-php_home: /usr/local/lenovosrv/php
+php_home: /usr/local/php
 temp_dir: /tmp/php_pthreads
 package_name: pthreads-3.1.6.tar.gz
 php_conf: "{{ php_home }}/etc/php.ini"

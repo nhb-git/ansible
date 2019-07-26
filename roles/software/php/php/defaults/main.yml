@@ -5,7 +5,7 @@ project_info: {
   name: php,
   version: "{{ project_version }}",
   temp_dir: /tmp/ansible,
-  base_dir: /usr/local/lenovosrv
+  base_dir: /usr/local
 }
 
 centos_current_depends_software: [
