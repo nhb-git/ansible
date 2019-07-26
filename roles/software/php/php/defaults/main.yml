@@ -5,7 +5,7 @@ project_info: {
   name: php,
   version: "{{ project_version }}",
   temp_dir: /tmp/ansible,
-  base_dir: /usr/local
+  base_dir: /usr/local/lenovosrv
 }
 
 centos_current_depends_software: [
@@ -44,6 +44,18 @@ software_info: {
         _7_0_30: {
           tar_name: php-7.0.30.tar.gz,
           unzip_dir_name: php-7.0.30,
+          install_cmd: "./configure --prefix={{ project_info.base_dir }}/{{ project_info.name }}-{{ project_info.version }}
+              --with-config-file-path={{ project_info.base_dir }}/{{ project_info.name }}-{{ project_info.version }}/etc
+              --with-iconv-dir   --with-jpeg-dir --with-png-dir   --with-zlib   --with-libxml-dir   --enable-xml   --disable-rpath   
+              --enable-bcmath   --enable-shmop   --enable-sysvsem   --enable-inline-optimization   --with-curl
+              --enable-mbregex --enable-mbstring   --with-mcrypt   --with-gd   --with-freetype-dir   --enable-gd-native-ttf
+              --with-openssl   --with-mhash --enable-pcntl   --enable-sockets   --with-xmlrpc   --enable-zip   --enable-soap
+              --enable-session   --with-gettext --with-mysqli=mysqlnd   --with-pdo-mysql=mysqlnd   --enable-fpm   --with-bz2
+              --enable-ftp --disable-fileinfo   --enable-opcache --enable-maintainer-zts && make ZEND_EXTRA_LIBS='-liconv' && make install"
+        },
+        _7_0_33: {
+          tar_name: php-7.0.33.tar.gz,
+          unzip_dir_name: php-7.0.33,
           install_cmd: "./configure --prefix={{ project_info.base_dir }}/{{ project_info.name }}-{{ project_info.version }}
               --with-config-file-path={{ project_info.base_dir }}/{{ project_info.name }}-{{ project_info.version }}/etc
               --with-iconv-dir   --with-jpeg-dir --with-png-dir   --with-zlib   --with-libxml-dir   --enable-xml   --disable-rpath   
@@ -109,7 +121,7 @@ software_info: {
         _2_6_8: {
           tar_name: mcrypt-2.6.8.tar.gz,
           unzip_dir_name: mcrypt-2.6.8,
-          install_cmd: "LD_LIBRARY_PATH=/usr/local/lib ./configure && make && make install && ldconfig"
+          install_cmd: "export LD_LIBRARY_PATH=/usr/local/lib && ./configure && make && make install && ldconfig"
         }
       },
       mhash: {

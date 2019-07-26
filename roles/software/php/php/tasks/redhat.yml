@@ -44,7 +44,7 @@
     dest: "{{ project_info.temp_dir }}"
   with_items:
     - "{{ redhat_current_depends_software }}"
-  when: ansible_distribution == "Red Hat Enterprise Linux"
+  when: ansible_distribution == "RedHat"
   tags: copy_redhat_package
 
 - name: install centos platform php and php's depend on package
@@ -62,7 +62,7 @@
     && {{ software_info.depends_software[item.name][item.version].install_cmd }}
   with_items:
     - "{{ redhat_current_depends_software }}"
-  when: ansible_distribution == "Red Hat Enterprise Linux"
+  when: ansible_distribution == "RedHat"
   tags: install_redhat_php
 
 - name: create php-fpm.d directory
@@ -119,6 +119,14 @@
     path: /etc/init.d/php-fpm
     state: absent
   when: ansible_distribution_major_version == "7"
+
+- name: add php's env para
+  blockinfile:
+    dest: /etc/profile
+    block: |
+      PATH=$PATH:{{ project_info.base_dir }}/{{ project_info.name }}/bin
+      export PATH
+    marker: "# {mark} php env para "
 
 - name: clean temp dir
   file: path={{ project_info.temp_dir }} state=absent

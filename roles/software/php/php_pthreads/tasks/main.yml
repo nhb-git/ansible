@@ -1,0 +1,15 @@
+---
+# tasks file for php_pthreads
+- name: create temp directory in remote server
+  file: path={{ temp_dir }} state=directory
+
+- name: copy and unzip php's module to temp directory in remote server 
+  unarchive: src={{ package_name }} dest={{ temp_dir }}
+
+- name: install module 
+  shell: >
+         cd {{ temp_dir }}/*/ && {{ php_home }}/bin/phpize && ./configure
+         --with-php-config={{ php_home }}/bin/php-config && make && make install
+
+- name: clean install package
+  file: path={{ temp_dir }} state=absent

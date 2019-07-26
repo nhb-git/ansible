@@ -1,6 +1,5 @@
 ---
 # defaults file for php_cphalcon
-php_home: /usr/local/php
 temp_cphalcon_dir: /tmp/php_cphalcon
 cphalcon_name: cphalcon.tar.gz
 php_conf: "{{ php_home }}/etc/php.ini"

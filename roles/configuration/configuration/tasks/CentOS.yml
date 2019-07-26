@@ -1,0 +1,103 @@
+- name: set sync config time
+  become: false
+  local_action: shell date "+%Y%m%d%H%M%S"
+  run_once: yes
+  register: sync_time
+
+- set_fact:
+    sync_time: "{{ sync_time.stdout }}"
+
+- name: install rsync
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ software }}"
+
+- name: delete local base dir
+  become: false
+  run_once: yes
+  local_action: file path="{{ configuration_info.dir_info.local_config_base_dir }}" state=absent
+
+- name: create local base dir
+  become: false
+  run_once: yes
+  local_action: file path="{{ configuration_info.dir_info.local_config_base_dir }}" state=directory
+
+- name: pull config to local dir
+  become: false
+  run_once: yes
+  local_action: git repo="{{ configuration_info.config_addr }}" dest="{{ configuration_info.dir_info.local_config_base_dir }}"
+
+- name: get local dir's file info
+  become: false
+  local_action: shell ls -a "{{ configuration_info.dir_info.local_config_base_dir }}/{{ configuration_info.env }}/{{ configuration_info.app_name }}/" | grep -v -E '^.$' | grep -v -E '^..$' | xargs -n 1
+  run_once: yes
+  register: files_info
+
+- set_fact: files_name={{ files_info.stdout_lines }}
+
+- name: set sync config time
+  become: false
+  local_action: shell date "+%Y%m%d%H%M%S"
+  run_once: yes
+  register: sync_time
+
+- set_fact:
+    sync_time: "{{ sync_time.stdout }}"
+
+- set_fact:
+    local_app_config_dir: "{{ configuration_info.dir_info.local_config_base_dir }}/{{ configuration_info.env }}/{{ configuration_info.app_name }}/"
+    local_app_config_package: "{{ configuration_info.dir_info.local_config_base_dir }}/{{ configuration_info.env }}-config-{{ sync_time }}.tar.gz"
+    backup_dir: "{{ configuration_info.dir_info.backup_config_base_dir }}/{{ configuration_info.env }}/{{ configuration_info.app_name }}/{{ sync_time }}"
+    remote_temp_dir: "{{ configuration_info.dir_info.remote_temp_base_dir }}/ansible-config-{{ sync_time }}/{{ configuration_info.env }}/{{ configuration_info.app_name }}"
+
+- name: zip config in local server
+  become: false
+  local_action: archive
+    path="{{ local_app_config_dir }}"
+    dest="{{ local_app_config_package }}"
+  run_once: yes
+
+- name: sync app config before exec cmd
+  shell: "{{ configuration_info.action.config_before_cmd }}"
+  when: configuration_info.action.config_before_cmd != ''
+
+- name: create backup and temp dir
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ configuration_info.config_owner }}"
+  with_items:
+    - "{{ backup_dir }}"
+    - "{{ remote_temp_dir }}"
+
+- name: unzip config package to remote server
+  unarchive:
+    src: "{{ local_app_config_package }}"
+    dest: "{{ remote_temp_dir }}"
+
+- name: backup remote server's config
+  shell: >
+    cd {{ configuration_info.dir_info.remote_config_dir }}/;
+    if stat {{ item }} > /dev/null 2>&1; then cp -R {{ item }} {{ backup_dir }}; fi
+  with_items: "{{ files_name }}"
+
+- name: sync config to remote server
+  shell: >
+    rsync -avzP --delete {{ remote_temp_dir }}/{{ item }} {{ configuration_info.dir_info.remote_config_dir }}
+  with_items: "{{ files_name }}"
+
+- name: sync app config after exec cmd
+  shell: "{{ configuration_info.action.config_after_cmd }}"
+  when: configuration_info.action.config_after_cmd != ''
+
+- name: clean remote temp config dir
+  become: true
+  file:
+    path: "{{ configuration_info.dir_info.remote_temp_base_dir }}/ansible-config-{{ sync_time }}"
+    state: absent
+
+- name: clean local ansible config dir
+  become: false
+  run_once: yes
+  local_action: file path="{{ configuration_info.dir_info.local_config_base_dir }}" state=absent
